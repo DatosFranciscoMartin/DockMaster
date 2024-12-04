@@ -1,5 +1,6 @@
 services:
   redmine:
+    container_name: ${CONTAINER_REDMINE_NAME}
     image: ${IMAGE}
     restart: always
     ports:
@@ -10,6 +11,7 @@ services:
       REDMINE_SECRET_KEY_BASE: ${REDMINE_SECRET_KEY_BASE}
 
   redmine_db:
+    container_name: ${CONTAINER_REDMINE_NAME}
     image: mysql:8.0
     restart: always
     environment:
