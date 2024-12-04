@@ -3,7 +3,7 @@ services:
     image: ${IMAGE}
     container_name: ${CONTAINER_NAME}
     ports:
-      - "${APP_PORT_INTERNAL}:${APP_PORT_INTERNAL}"
+      - "${APP_PORT_INTERNAL}:9001"
     restart: always
     volumes:
       - ${SOCK_MOUNT}:/var/run/docker.sock

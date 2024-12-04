@@ -1,0 +1,17 @@
+services:
+  redmine:
+    image: ${IMAGE}
+    restart: always
+    ports:
+      - ${PORT_WEB}:3000
+    environment:
+      REDMINE_DB_MYSQL: redmine_db
+      REDMINE_DB_PASSWORD: ${REDMINE_DB_PASSWORD}
+      REDMINE_SECRET_KEY_BASE: ${REDMINE_SECRET_KEY_BASE}
+
+  redmine_db:
+    image: mysql:8.0
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${REDMINE_DB_PASSWORD}
+      MYSQL_DATABASE: redmine

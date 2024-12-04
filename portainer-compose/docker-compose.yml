@@ -3,8 +3,8 @@ services:
     image: ${IMAGE}
     container_name: ${CONTAINER_NAME}
     ports:
-      - "${APP_PORT_INTERNAL}:${APP_PORT_INTERNAL}"
-      - "${APP_PORT_WEB}:${APP_PORT_WEB}"
+      - "${APP_PORT_INTERNAL}:8000"
+      - "${APP_PORT_WEB}:9443"
     restart: always
     volumes:
       - ${SOCK_MOUNT}:/var/run/docker.sock
