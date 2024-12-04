@@ -1,0 +1,15 @@
+services:
+  portainer:
+    image: ${IMAGE}
+    container_name: ${CONTAINER_NAME}
+    ports:
+      - "${APP_PORT_INTERNAL}:${APP_PORT_INTERNAL}"
+      - "${APP_PORT_WEB}:${APP_PORT_WEB}"
+    restart: always
+    volumes:
+      - ${SOCK_MOUNT}:/var/run/docker.sock
+      - ${DATA}:/data
+
+volumes:
+  portainer_data:
+    driver: local
