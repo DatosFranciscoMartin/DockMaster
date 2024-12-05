@@ -50,5 +50,6 @@ volumes:
   grafana-data:
     driver: local
     driver_opts:
+      type: none
       o: bind
       device: ${DEVICE_VOLUME}
