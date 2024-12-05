@@ -9,8 +9,6 @@ services:
       REDMINE_DB_MYSQL: redmine_db
       REDMINE_DB_PASSWORD: ${REDMINE_DB_PASSWORD}
       REDMINE_SECRET_KEY_BASE: ${REDMINE_SECRET_KEY_BASE}
-    volumes:
-      - ${DATA}:/usr/src/redmine
 
   redmine_db:
     container_name: ${CONTAINER_DB_NAME}
