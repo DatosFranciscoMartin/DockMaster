@@ -1,0 +1,54 @@
+services:
+  cadvisor:
+    image: ${IMAGE_CADVISOR}
+    container_name: ${CONTAINER_NAME_CADVISOR}
+    platform: linux/aarch64
+    ports:
+      - "${APP_PORT_INTERNAL_CADVISOR}:8080"
+    restart: always
+    volumes:
+      - "/:/rootfs:ro"
+      - "/var/run:/var/run:ro"
+      - "/sys:/sys:ro"
+      - "/var/lib/docker/:/var/lib/docker:ro"
+      - "/dev/disk/:/dev/disk:ro"
+    devices:
+      - "/dev/kvm:"
+    privileged: true
+
+  prometheus:
+    image: ${IMAGE_PROMETHEUS}
+    container_name: ${CONTAINER_NAME_PROMETHEUS}
+    restart: always
+    network_mode: host
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    privileged: true
+    depends_on:
+      - cadvisor
+
+  grafana:
+    image: ${IMAGE_GRAFANA}
+    container_name: ${CONTAINER_NAME_GRAFANA}
+    network_mode: host
+    ports:
+      - "${APP_PORT_INTERNAL_GRAFANA}:3000"
+    restart: always
+    environment:
+      - GF_PATHS_PROVISIONING=/etc/grafana/provisioning
+      - DS_PROMETHEUS=prometheus
+    privileged: true
+    volumes: 
+      - "grafana-data:/var/lib/grafana"
+      - "./datasources.yml:/etc/grafana/provisioning/datasources/datasources.yml"
+      - "./dashboard.json:/var/lib/grafana/dashboards/dashboard.json"
+      - "./default.yaml:/etc/grafana/provisioning/dashboards/default.yaml"
+    depends_on:
+      - prometheus
+
+volumes:
+  grafana-data:
+    driver: local
+    driver_opts:
+      o: bind
+      device: ${DEVICE_VOLUME}
