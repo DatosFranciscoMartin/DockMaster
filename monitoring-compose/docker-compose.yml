@@ -12,20 +12,18 @@ services:
       - "/sys:/sys:ro"
       - "/mnt/docker_data/docker:/var/lib/docker:ro"
       - "/dev/disk/:/dev/disk:ro"
-    devices:
-      - "/dev/kvm:"
     privileged: true
 
-#  prometheus:
-#    image: ${IMAGE_PROMETHEUS}
-#    container_name: ${CONTAINER_NAME_PROMETHEUS}
-#    restart: always
-#    network_mode: host
-#    volumes:
-#      - ./prometheus.yml:/etc/prometheus/prometheus.yml
-#    privileged: true
-#    depends_on:
-#      - cadvisor
+  prometheus:
+    image: ${IMAGE_PROMETHEUS}
+    container_name: ${CONTAINER_NAME_PROMETHEUS}
+    restart: always
+    network_mode: host
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    privileged: true
+    depends_on:
+      - cadvisor
 #
 #  grafana:
 #    image: ${IMAGE_GRAFANA}
