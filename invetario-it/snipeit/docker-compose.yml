@@ -1,15 +1,9 @@
-# Compose file for production.
-
-volumes:
-  db_data:
-  storage:
-
 services:
   app:
     image: snipe/snipe-it:${APP_VERSION:-v7.0.11}
     restart: unless-stopped
     volumes:
-      - storage:/mnt/docker_data/snipeIT
+      - /mnt/docker_data/snipeIT:/var/lib/snipeit
     ports:
       - "${APP_PORT:-8000}:80"
     depends_on:
@@ -23,7 +17,8 @@ services:
     image: mariadb:11.5.2
     restart: unless-stopped
     volumes:
-      - db_data:/mnt/docker_data/snipeIT/BBDD
+      #- db_data:/var/lib/mysql
+      - /mnt/docker_data/snipeIT/BBDD:/var/lib/mysql
     environment:
       MYSQL_DATABASE: ${DB_DATABASE}
       MYSQL_USER: ${DB_USERNAME}
