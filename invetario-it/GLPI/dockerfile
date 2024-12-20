@@ -38,12 +38,14 @@ RUN apt-get update \
     libsasl2-modules-db
 
 
-# Copiamos la aplicacion
+# Copiamos la aplicacion y su configuración
 COPY glpi-10.0.17.tgz glpi-10.0.17.tgz
 COPY glpi.conf /etc/apache2/sites-available/glpi.conf
-
 RUN tar -xvf glpi-10.0.17.tgz
 
+# Realizamos los cambios y y cambiamos los permisos necesarios
+RUN chown -R www-data:www-data /var/www/glpi
+RUN a2enmod rewrite && service apache2 reload
 
 #Exponer los puertos que necesitamos
 EXPOSE 80 443
