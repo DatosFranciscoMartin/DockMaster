@@ -4,7 +4,7 @@ LABEL maintainer="franciscojavier.martin@datosmedia.es"
 LABEL Descripcion="Imagen para montar via Docker-Compose un entorno para la aplicación GLPI"
 LABEL version="1.0"
 
-    WORKDIR /var/www
+WORKDIR /var/www
 
 # Paquetes a instalar en la imagen
 RUN apt-get update \
@@ -37,9 +37,15 @@ RUN apt-get update \
     libsasl2-modules \
     libsasl2-modules-db
 
-    COPY glpi-10.0.17.tgz glpi-10.0.17.tgz
 
-    RUN tar -xvf glpi-10.0.17.tgz
+# Copiamos la aplicacion
+COPY glpi-10.0.17.tgz glpi-10.0.17.tgz
 
-    #Exponer los puertos que necesitamos
-    EXPOSE 80 443
+RUN tar -xvf glpi-10.0.17.tgz
+
+
+#Exponer los puertos que necesitamos
+EXPOSE 80 443
+
+# Comando de inicio por defecto
+CMD ["apachectl", "-D", "FOREGROUND"]
