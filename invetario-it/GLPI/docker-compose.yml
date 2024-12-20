@@ -3,19 +3,21 @@ services:
   glpi:
     image: glpi:latest
     container_name : glpi
+    hostname: glpi-server
     ports:
       - "8085:80"
     environment:
       - TIMEZONE=Europe/Madrid
     restart: always
-    depends_on:
-      db:
-        condition: service_healthy
-        restart: true
+#    depends_on:
+#      db:
+#        condition: service_healthy
+#        restart: true
 
   db:
     image: mariadb:11.5.2
     restart: unless-stopped
     container_name: mariadb
+    hostname: glpi_db
     env_file:
-      - ./mariadb.env
+      - ./.mariadb.env
