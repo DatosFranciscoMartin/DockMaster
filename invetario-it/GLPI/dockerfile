@@ -45,7 +45,7 @@ RUN tar -xvf glpi-10.0.17.tgz
 
 # Realizamos los cambios y y cambiamos los permisos necesarios
 RUN chown -R www-data:www-data /var/www/glpi
-RUN a2enmod rewrite && service apache2 reload
+RUN a2enmod rewrite && RUN a2ensite glpi && service apache2 reload
 
 #Exponer los puertos que necesitamos
 EXPOSE 80 443
