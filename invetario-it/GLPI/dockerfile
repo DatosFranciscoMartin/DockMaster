@@ -1,9 +1,45 @@
-FROM php:latest-apache
+FROM debian:12
 
-WORKDIR /root
+LABEL maintainer="franciscojavier.martin@datosmedia.es"
+LABEL Descripcion="Imagen para montar via Docker-Compose un entorno para la aplicación GLPI"
+LABEL version="1.0"
 
-RUN apt-get update && \
-    apt-get install -y wget apt-transport-https gnupg2 curl php libapache2-mod-php php-mysql php php-apcu php-cli php-common php-curl php-gd php-imap php-ldap php-mysql php-xmlrpc php-xml php-mbstring php-bcmath php-intl php-zip php-redis php-bz2 libapache2-mod-php php-soap php-cas
+    WORKDIR /var/www
 
-COPY glpi-10.0.17.tgz glpi-10.0.17.tgz
-RUN tar -xvf glpi-10.0.17.tgz || mv glpì /var/www/
+# Paquetes a instalar en la imagen
+RUN apt-get update \
+    && apt install --yes ca-certificates apt-transport-https lsb-release wget curl \
+    && curl -sSLo /usr/share/keyrings/deb.sury.org-php.gpg https://packages.sury.org/php/apt.gpg \ 
+    && sh -c 'echo "deb [signed-by=/usr/share/keyrings/deb.sury.org-php.gpg] https://packages.sury.org/php/ $(lsb_release -sc) main" > /etc/apt/sources.list.d/php.list' \
+    && apt update \
+    && apt install --yes --no-install-recommends \
+    apache2 \
+    php8.3 \
+    php8.3-mysql \
+    php8.3-bcmath \
+    php8.3-ldap \
+    php8.3-xmlrpc \
+    php8.3-imap \
+    php8.3-curl \
+    php8.3-gd \
+    php8.3-mbstring \
+    php8.3-xml \
+    php-cas \
+    php8.3-intl \
+    php8.3-zip \
+    php8.3-bz2 \
+    php8.3-redis \
+    cron \
+    jq \
+    libldap-2.5-0 \
+    libldap-common \
+    libsasl2-2 \
+    libsasl2-modules \
+    libsasl2-modules-db
+
+    COPY glpi-10.0.17.tgz glpi-10.0.17.tgz
+
+    RUN tar -xvf glpi-10.0.17.tgz
+
+    #Exponer los puertos que necesitamos
+    EXPOSE 80 443
