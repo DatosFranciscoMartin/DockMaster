@@ -50,7 +50,8 @@ RUN tar -xvf glpi-10.0.17.tgz
 # Realizamos los cambios y y cambiamos los permisos necesarios
 RUN chown -R www-data:www-data /etc/ssl/medusa.csur.*
 RUN chown -R www-data:www-data /var/www/glpi
-RUN a2enmod rewrite 
+RUN a2enmod rewrite
+RUN a2enmod ssl
 RUN a2ensite glpi
 RUN service apache2 restart
 
