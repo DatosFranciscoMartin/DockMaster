@@ -9,6 +9,12 @@ LABEL version="1.0"
 # Establecer el directorio de trabajo
 WORKDIR /var/www
 
+# Añadir repositorio PHP
+RUN curl -sSLo /usr/share/keyrings/deb.sury.org-php.gpg https://packages.sury.org/php/apt.gpg \
+    && echo "deb [signed-by=/usr/share/keyrings/deb.sury.org-php.gpg] https://packages.sury.org/php/ $(lsb_release -sc) main" > /etc/apt/sources.list.d/php.list \
+    && apt-get update \
+    && apt-get upgrade --yes
+
 # Actualizar paquetes e instalar dependencias
 RUN apt-get update && apt-get install --yes \
     ca-certificates \
@@ -41,12 +47,6 @@ RUN apt-get update && apt-get install --yes \
     libsasl2-modules-db \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
-
-# Añadir repositorio PHP
-RUN curl -sSLo /usr/share/keyrings/deb.sury.org-php.gpg https://packages.sury.org/php/apt.gpg \
-    && echo "deb [signed-by=/usr/share/keyrings/deb.sury.org-php.gpg] https://packages.sury.org/php/ $(lsb_release -sc) main" > /etc/apt/sources.list.d/php.list \
-    && apt-get update \
-    && apt-get upgrade --yes
 
 # Habilitar módulos de Apache
 RUN a2enmod rewrite ssl
