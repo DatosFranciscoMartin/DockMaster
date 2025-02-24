@@ -1,18 +1,21 @@
+# Imagen base
 FROM debian:12
 
+# Metadatos
 LABEL maintainer="franciscojavier.martin@datosmedia.es"
-LABEL Descripcion="Imagen para montar via Docker-Compose un entorno para la aplicación GLPI"
+LABEL description="Imagen Docker para montar un entorno GLPI con soporte HTTPS"
 LABEL version="1.0"
 
+# Establecer el directorio de trabajo
 WORKDIR /var/www
 
-# Paquetes a instalar en la imagen
-RUN apt-get update \
-    && apt install --yes ca-certificates apt-transport-https lsb-release wget curl \
-    && curl -sSLo /usr/share/keyrings/deb.sury.org-php.gpg https://packages.sury.org/php/apt.gpg \ 
-    && sh -c 'echo "deb [signed-by=/usr/share/keyrings/deb.sury.org-php.gpg] https://packages.sury.org/php/ $(lsb_release -sc) main" > /etc/apt/sources.list.d/php.list' \
-    && apt update \
-    && apt install --yes --no-install-recommends \
+# Actualizar paquetes e instalar dependencias
+RUN apt-get update && apt-get install --yes \
+    ca-certificates \
+    apt-transport-https \
+    lsb-release \
+    wget \
+    curl \
     apache2 \
     php8.3 \
     php8.3-mysql \
@@ -35,29 +38,39 @@ RUN apt-get update \
     libldap-common \
     libsasl2-2 \
     libsasl2-modules \
-    libsasl2-modules-db
+    libsasl2-modules-db \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
+# Añadir repositorio PHP
+RUN curl -sSLo /usr/share/keyrings/deb.sury.org-php.gpg https://packages.sury.org/php/apt.gpg \
+    && echo "deb [signed-by=/usr/share/keyrings/deb.sury.org-php.gpg] https://packages.sury.org/php/ $(lsb_release -sc) main" > /etc/apt/sources.list.d/php.list \
+    && apt-get update \
+    && apt-get upgrade --yes
 
-# Copiamos los ficheros de configuración del SSL
+# Habilitar módulos de Apache
+RUN a2enmod rewrite ssl
+
+# Copiar certificados SSL
 COPY ssl/medusa.csur.crt /etc/ssl/medusa.csur.crt
 COPY ssl/medusa.csur.key /etc/ssl/medusa.csur.key
+RUN chmod 600 /etc/ssl/medusa.csur.*
 
-# Copiamos la aplicacion y su configuración
-COPY glpi-10.0.17.tgz glpi-10.0.17.tgz
+# Copiar GLPI y configuraciones
+COPY glpi-10.0.17.tgz /tmp/
 COPY glpi.conf /etc/apache2/sites-available/glpi.conf
-RUN tar -xvf glpi-10.0.17.tgz
+RUN tar -xvf /tmp/glpi-10.0.17.tgz -C /var/www/ \
+    && rm /tmp/glpi-10.0.17.tgz
 
-# Realizamos los cambios y y cambiamos los permisos necesarios
-RUN chown -R www-data:www-data /etc/ssl/medusa.csur.*
+# Establecer permisos correctos
 RUN chown -R www-data:www-data /var/www/glpi
-RUN a2enmod rewrite
-RUN a2enmod ssl
-RUN a2ensite glpi
-RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
-RUN service apache2 restart
 
-#Exponer los puertos que necesitamos
+# Configuración Apache
+RUN a2ensite glpi \
+    && echo "ServerName localhost" >> /etc/apache2/apache2.conf
+
+# Exponer puertos
 EXPOSE 80 443
 
-# Comando de inicio por defecto
+# Lanzar Apache en primer plano
 CMD ["apachectl", "-D", "FOREGROUND"]
