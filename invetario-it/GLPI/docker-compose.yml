@@ -5,7 +5,7 @@ services:
     container_name : glpi
     hostname: glpi-server
     ports:
-      - "8085:80"
+      - "8085:443"
     environment:
       - TIMEZONE=Europe/Madrid
     restart: always
