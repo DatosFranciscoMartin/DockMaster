@@ -54,6 +54,10 @@ COPY glpi.conf /etc/apache2/sites-available/glpi.conf
 RUN tar -xvf /tmp/glpi-10.0.17.tgz -C /var/www/ \
     && rm /tmp/glpi-10.0.17.tgz
 
+# Configura las directivas de sesión en el php.ini
+RUN echo "session.cookie_httponly=On" >> /usr/local/etc/php/php.ini && \
+echo "session.cookie_secure=On" >> /usr/local/etc/php/php.ini
+
 # Establecer permisos correctos
 RUN chown -R www-data:www-data /var/www/glpi
 
